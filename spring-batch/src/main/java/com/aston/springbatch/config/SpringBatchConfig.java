@@ -41,14 +41,17 @@ public class SpringBatchConfig {
 
     @Bean
     public Job bankJob(){
-        Step step1 = stepBuilderFactory.get("step-load-data")
+        return jobBuilderFactory.get("bank-data-loader-job")
+                .start(step1()).build();
+    }
+    @Bean
+    public Step step1(){
+        return stepBuilderFactory.get("step-load-data")
                 .<BankTransaction, BankTransaction>chunk(100)
-                .reader(itemReader)
+                .reader(flatFileItemReader(null))
                 .processor(compositeProcessor())
                 .writer(itemWriter)
                 .build();
-        return jobBuilderFactory.get("bank-data-loader-job")
-                .start(step1).build();
     }
     @Bean
     public BankTrasactionItemProcessor itemProcessor1(){
